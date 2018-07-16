@@ -74,7 +74,7 @@ public class LoginUser extends AppCompatActivity {
         btnReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(LoginUser.this, "Buka diskusi produk", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginUser.this, "Masuk registrasi", Toast.LENGTH_SHORT).show();
             }
         });
     }

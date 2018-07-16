@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Home");
         setSupportActionBar(toolbar);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -267,13 +268,25 @@ public class MainActivity extends AppCompatActivity
             }
             //kalau sudah login
             else{
-                Toast.makeText(this, "Keranjang belanja", Toast.LENGTH_SHORT).show();
-
                 //masuk ke keranjang belanja
+                Intent intent = new Intent(MainActivity.this, KeranjangActivity.class);
+                startActivity(intent);
             }
             return true;
         }
-
+        else if (id == R.id.act_trsk){
+            //kalau belum login
+            if(!session.isLoggedIn()){
+                Toast.makeText(MainActivity.this, "Anda belum login!", Toast.LENGTH_SHORT).show();
+            }
+            //kalau sudah login
+            else{
+                //masuk ke transaksi
+                Intent intent = new Intent(MainActivity.this, Transaksi.class);
+                startActivity(intent);
+            }
+            return true;
+        }
         else if (id == R.id.act_akun){
             //kalau belum login
             if(!session.isLoggedIn()){
@@ -284,8 +297,7 @@ public class MainActivity extends AppCompatActivity
             }
             //kalau sudah login
             else{
-                Toast.makeText(this, "Akun saya", Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(this, "Akun saya", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, BiodataUser.class);
                 startActivity(intent);
             }

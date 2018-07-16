@@ -85,7 +85,10 @@ public class Beranda extends Fragment{
 
 
         sliderItem = new ArrayList<ItemSlider>();
+
         new getSlider().execute();
+
+        new getProdukUgl().execute();
 
         sliderAdapter = new SliderAdapter(getActivity(), sliderItem);
         viewPagerSlider.setAdapter(sliderAdapter);
@@ -99,6 +102,9 @@ public class Beranda extends Fragment{
         rc.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         rc.setItemAnimator(new DefaultItemAnimator());
         rc.setAdapter(prdkAdapter);
+
+        //sliderAdapter.notifyDataSetChanged();
+        //prdkAdapter.notifyDataSetChanged();
 
         return view;
     }
@@ -188,8 +194,6 @@ public class Beranda extends Fragment{
                     }
                 }, 3000, 3000);
 
-
-                new getProdukUgl().execute();
             }
             ///////////
         }

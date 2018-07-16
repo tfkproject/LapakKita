@@ -112,7 +112,7 @@ public class Umkm extends Fragment {
 
                             // Storing each json item in variable
                             String foto = c.getString("logo");
-                            String id = c.getString("id_pemilik");
+                            String id = c.getString("id_umkm");
                             String pemilik = c.getString("nama_pemilik");
                             String nama = c.getString("nama_umkm");
                             String alamat = c.getString("alamat_umkm");

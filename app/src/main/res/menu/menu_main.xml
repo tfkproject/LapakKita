@@ -18,6 +18,13 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/act_trsk"
+        android:orderInCategory="100"
+        android:title="Transaksi"
+        android:icon="@drawable/ic_swap_horiz"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/act_akun"
         android:orderInCategory="100"
         android:title="Akun saya"

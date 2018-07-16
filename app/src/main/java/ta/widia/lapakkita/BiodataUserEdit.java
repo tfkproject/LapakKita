@@ -11,54 +11,47 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import ta.widia.lapakkita.adapter.ProdukDetailImageAdapter;
-import ta.widia.lapakkita.model.ItemProdukDetailImage;
 import ta.widia.lapakkita.util.Config;
 import ta.widia.lapakkita.util.Request;
 import ta.widia.lapakkita.util.SessionManager;
 
-public class BiodataUser extends AppCompatActivity {
+public class BiodataUserEdit extends AppCompatActivity {
 
     ImageView logo;
-    TextView txtNama, txtNoHp, txtAlamat, txtEmail;
-    Button btnLogout;
+    EditText edtNama, edtNoHp, edtAlamat, edtEmail;
+    Button btnSimpan;
     SessionManager session;
     private ProgressDialog pDialog;
-    private String url = Config.HOST+"biodata_pelanggan.php";
-    String link_foto;
+    private String url = Config.HOST+"biodata_pelanggan_update.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
+        setContentView(R.layout.activity_user_edit);
 
         //cek permission di android M
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
 
@@ -69,57 +62,42 @@ public class BiodataUser extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         HashMap<String, String> user = session.getUserDetails();
-        String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
-        final String foto_pelanggan = user.get(SessionManager.KEY_FOTO_PELANGGAN);
-        /*String nm_pelanggan = user.get(SessionManager.KEY_NM_PELANGGAN);
-        String email_pelanggan = user.get(SessionManager.KEY_MAIL_PELANGGAN);
-        String nohp_pelanggan = user.get(SessionManager.KEY_NOHP_PELANGGAN);
-        String alamat_pelanggan = user.get(SessionManager.KEY_ALAMAT_PELANGGAN);
-        String foto_pelanggan = user.get(SessionManager.KEY_FOTO_PELANGGAN);*/
+        final String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_edit);
-        fab.setOnClickListener(new View.OnClickListener() {
+        String nm_pelanggan = getIntent().getStringExtra("key_nama");
+        String email_pelanggan = getIntent().getStringExtra("key_email");
+        String nohp_pelanggan = getIntent().getStringExtra("key_nohp");
+        String alamat_pelanggan = getIntent().getStringExtra("key_alamat");
+        final String foto_pelanggan = getIntent().getStringExtra("key_foto");
+
+        logo = (ImageView) findViewById(R.id.edt_profil_user);
+        Glide.with(BiodataUserEdit.this).load(foto_pelanggan).into(logo);
+
+        edtNama = (EditText) findViewById(R.id.edt_nama_user);
+        edtNama.setText(nm_pelanggan);
+        edtNoHp = (EditText) findViewById(R.id.edt_hp_user);
+        edtNoHp.setText(nohp_pelanggan);
+        edtAlamat = (EditText) findViewById(R.id.edt_alamat_user);
+        edtAlamat.setText(alamat_pelanggan);
+        edtEmail = (EditText) findViewById(R.id.edt_email_user);
+        edtEmail.setText(email_pelanggan);
+
+        btnSimpan = (Button) findViewById(R.id.btn_simpan);
+        btnSimpan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent  = new Intent(BiodataUser.this, BiodataUserEdit.class);
-                intent.putExtra("key_nama", txtNama.getText().toString());
-                intent.putExtra("key_nohp", txtNoHp.getText().toString());
-                intent.putExtra("key_alamat", txtAlamat.getText().toString());
-                intent.putExtra("key_email", txtEmail.getText().toString());
-                intent.putExtra("key_foto", link_foto);
-                startActivity(intent);
-            }
-        });
-
-        logo = (ImageView) findViewById(R.id.profil_user);
-
-        txtNama = (TextView) findViewById(R.id.nama_user);
-        //txtNama.setText(nm_pelanggan);
-        txtNoHp = (TextView) findViewById(R.id.hp_user);
-        //txtNoHp.setText(nohp_pelanggan);
-        txtAlamat = (TextView) findViewById(R.id.alamat_user);
-        //txtAlamat.setText(alamat_pelanggan);
-        txtEmail = (TextView) findViewById(R.id.email_user);
-        //txtEmail.setText(email_pelanggan);
-
-        btnLogout = (Button) findViewById(R.id.btn_logout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(BiodataUser.this);
-                builder.setTitle("Anda akan logout");
-                builder.setMessage("Yakin ingin logout dari aplikasi?");
+                AlertDialog.Builder builder = new AlertDialog.Builder(BiodataUserEdit.this);
+                builder.setTitle("Perhatian!");
+                builder.setMessage("Yakin ingin menyimpan data?");
                 builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        session.logoutUser();
-                        Intent intent = new Intent(BiodataUser.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        startActivity(intent);
+                        String nama = edtNama.getText().toString();
+                        String nohp = edtNoHp.getText().toString();
+                        String alamat = edtAlamat.getText().toString();
+                        String email = edtEmail.getText().toString();
 
-                        //terus tutup activity ini
-                        finish();
+                        new submitData(id_pelanggan, nama, alamat, email, nohp, foto_pelanggan).execute();
                     }
                 });
 
@@ -136,19 +114,9 @@ public class BiodataUser extends AppCompatActivity {
                 alert.show();
             }
         });
-
-        //new ambilData(id_pelanggan).execute();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        HashMap<String, String> user = session.getUserDetails();
-        String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
-        new ambilData(id_pelanggan).execute();
-    }
-
-    private class ambilData extends AsyncTask<Void,Void,String> {
+    private class submitData extends AsyncTask<Void,Void,String> {
 
         //variabel untuk tangkap data
         private int scs = 0;
@@ -157,15 +125,20 @@ public class BiodataUser extends AppCompatActivity {
         String id_pelanggan;
         String id, nama, alamat, email, no_hp, foto;
 
-        public ambilData(String id_pelanggan){
+        public submitData(String id_pelanggan, String nama, String alamat, String email, String no_hp, String foto){
             this.id_pelanggan = id_pelanggan;
+            this.nama = nama;
+            this.alamat = alamat;
+            this.email = email;
+            this.no_hp = no_hp;
+            this.foto = foto;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(BiodataUser.this);
-            pDialog.setMessage("Memuat data...");
+            pDialog = new ProgressDialog(BiodataUserEdit.this);
+            pDialog.setMessage("Submit data...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
@@ -176,13 +149,18 @@ public class BiodataUser extends AppCompatActivity {
             try{
                 //susun parameter
                 HashMap<String,String> detail = new HashMap<>();
-                //detail.put("id_pelanggan", id_pelanggan);
+                detail.put("id_pelanggan", id_pelanggan);
+                detail.put("nama", nama);
+                detail.put("nohp", no_hp);
+                detail.put("alamat", alamat);
+                detail.put("email", email);
+                detail.put("foto", foto);
 
                 try {
                     //convert this HashMap to encodedUrl to send to php file
                     String dataToSend = hashMapToUrl(detail);
                     //make a Http request and send data to php file
-                    String response = Request.post(url+"?id_pelanggan="+id_pelanggan,dataToSend);
+                    String response = Request.post(url,dataToSend);
 
                     //dapatkan respon
                     Log.e("Respon", response);
@@ -191,21 +169,7 @@ public class BiodataUser extends AppCompatActivity {
                     scs = ob.getInt("success");
 
                     if (scs == 1) {
-                        JSONArray products = ob.getJSONArray("field");
-
-                        for (int i = 0; i < products.length(); i++) {
-                            JSONObject c = products.getJSONObject(i);
-
-                            // Storing each json item in variable
-                            id = c.getString("id_pelanggan");
-                            nama = c.getString("nama_pelanggan");
-                            alamat = c.getString("alamat_pelanggan");
-                            email = c.getString("email_pelanggan");
-                            no_hp = c.getString("no_hp_pelanggan");
-                            foto  = c.getString("foto");
-                            link_foto = foto;
-
-                        }
+                        psn = ob.getString("message");
                     } else {
                         // no data found
                         psn = ob.getString("message");
@@ -228,14 +192,9 @@ public class BiodataUser extends AppCompatActivity {
             pDialog.dismiss();
 
             if(scs == 0){
-                Toast.makeText(BiodataUser.this, ""+psn, Toast.LENGTH_SHORT).show();
+                Toast.makeText(BiodataUserEdit.this, ""+psn, Toast.LENGTH_SHORT).show();
             }else{
-                //set
-                txtNama.setText(nama);
-                txtNoHp.setText(no_hp);
-                txtAlamat.setText(alamat);
-                txtEmail.setText(email);
-                Glide.with(BiodataUser.this).load(foto).into(logo);
+                finish();
             }
         }
 

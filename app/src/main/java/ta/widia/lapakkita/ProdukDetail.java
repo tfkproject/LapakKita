@@ -1,11 +1,14 @@
 package ta.widia.lapakkita;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -44,6 +47,8 @@ public class ProdukDetail extends AppCompatActivity {
     ViewPager viewPagerImage;
     ProdukDetailImageAdapter imageAdapter;
     SessionManager session;
+    String foto_thumb;
+    String nama, harga, stok, gambar1, gambar2, gambar3, gambar4, ukm, alamat, view, desk;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +58,7 @@ public class ProdukDetail extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
 
-        String id_produk = getIntent().getStringExtra("key_id_pdk");
+        final String id_produk = getIntent().getStringExtra("key_id_pdk");
 
         /*String nama = getIntent().getStringExtra("key_nama");
         String alamat = getIntent().getStringExtra("key_alamat");
@@ -72,6 +77,9 @@ public class ProdukDetail extends AppCompatActivity {
 
         imageAdapter = new ProdukDetailImageAdapter(ProdukDetail.this, imageItem);
         viewPagerImage.setAdapter(imageAdapter);
+
+
+        imageAdapter.notifyDataSetChanged();
 
         txtNama = (TextView) findViewById(R.id.txt_nama);
         txtHarga = (TextView) findViewById(R.id.txt_harga);
@@ -97,7 +105,14 @@ public class ProdukDetail extends AppCompatActivity {
 
                     String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
                     //lakukan pembelian
-                    Toast.makeText(ProdukDetail.this, "Anda akan beli produk ini", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ProdukDetail.this, "Anda akan beli produk ini", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ProdukDetail.this, OrderActivity.class);
+                    intent.putExtra("key_id_produk", id_produk);
+                    intent.putExtra("key_foto", gambar1);
+                    intent.putExtra("key_nama", nama);
+                    intent.putExtra("key_harga", harga);
+                    intent.putExtra("key_ukm", ukm);
+                    startActivity(intent);
                 }
             }
         });
@@ -125,8 +140,7 @@ public class ProdukDetail extends AppCompatActivity {
 
         //variabel untuk tangkap data
         private int scs = 0;
-
-        String id, nama, harga, stok, gambar1, gambar2, gambar3, gambar4, ukm, alamat, view, desk;
+        String id;
 
         public getData(String id){
             this.id = id;
@@ -250,5 +264,6 @@ public class ProdukDetail extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
 }
