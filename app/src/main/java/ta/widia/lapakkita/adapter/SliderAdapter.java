@@ -49,7 +49,8 @@ public class SliderAdapter extends PagerAdapter{
         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
         Glide.with(context).load(itemList.get(position).getUrl_gambar()).into(imageView);
         TextView caption = (TextView) view.findViewById(R.id.txtCaption);
-        caption.setText(itemList.get(position).getJudul()+" - "+itemList.get(position).getPemilik());
+        //caption.setText(itemList.get(position).getJudul()+" - "+itemList.get(position).getPemilik());
+        caption.setText(itemList.get(position).getJudul());
 
         ViewPager vp = (ViewPager) container;
         vp.addView(view, 0);

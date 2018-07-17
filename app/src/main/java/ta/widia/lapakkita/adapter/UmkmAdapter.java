@@ -44,6 +44,7 @@ public class UmkmAdapter extends RecyclerView.Adapter<UmkmAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, UkmDetail.class);
+                intent.putExtra("key_id", items.get(position).getId());
                 intent.putExtra("key_nama", items.get(position).getNama_ukm());
                 intent.putExtra("key_alamat", items.get(position).getAlamat());
                 intent.putExtra("key_hp", items.get(position).getNo_hp());

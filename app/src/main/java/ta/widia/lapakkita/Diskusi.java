@@ -1,18 +1,10 @@
 package ta.widia.lapakkita;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,11 +13,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,26 +28,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ta.widia.lapakkita.adapter.DiskusiAdapter;
 import ta.widia.lapakkita.adapter.TransaksiAdapter;
+import ta.widia.lapakkita.model.ItemDiskusi;
 import ta.widia.lapakkita.model.ItemTransaksi;
 import ta.widia.lapakkita.util.Config;
 import ta.widia.lapakkita.util.Request;
 import ta.widia.lapakkita.util.SessionManager;
 
-public class Transaksi extends AppCompatActivity {
+public class Diskusi extends AppCompatActivity {
 
     private RecyclerView rc;
-    private TransaksiAdapter adapter;
-    private List<ItemTransaksi> itemList;
+    private DiskusiAdapter adapter;
+    private List<ItemDiskusi> itemList;
     private ProgressDialog pDialog;
-    public String SERVER = Config.HOST+"lihat_transaksi.php";
+    public String SERVER = Config.HOST+"lihat_diskusi.php";
+    public String url_post_komen = Config.HOST+"diskusi_post.php";
     SessionManager session;
+
+    private EditText edtKomentar;
+    private ImageButton btnSend;
+
+    String id_produk;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transaksi);
+        setContentView(R.layout.activity_diskusi);
 
         ///
         session = new SessionManager(getApplicationContext());
@@ -65,54 +63,48 @@ public class Transaksi extends AppCompatActivity {
         //kalau belum login
         if(!session.isLoggedIn()){
             finish();
-            Toast.makeText(Transaksi.this, "Anda belum login!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Diskusi.this, "Anda belum login!", Toast.LENGTH_SHORT).show();
         }
         ///
 
-        getSupportActionBar().setTitle("Transaksi");
+        getSupportActionBar().setTitle("Diskusi Produk");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         rc = (RecyclerView) findViewById(R.id.recycler_view);
 
         itemList = new ArrayList<>();
-        adapter = new TransaksiAdapter(Transaksi.this, itemList, new TransaksiAdapter.CardAdapterListener() {
-            @Override
-            public void onCardSelected(int position, String id_transaksi, String status) {
-                if(status.contains("N") || status.contains("W")){
-                    //masuk ke konfirmasi pembayaran
-                    Intent intent = new Intent(Transaksi.this, KonfirmasiBayarActivity.class);
-                    intent.putExtra("key_id_transaksi", id_transaksi);
-                    startActivity(intent);
-                }
-                if(status.contains("S") || status.contains("X")){
-                    //masuk ke konfirmasi barang
-                    //Intent intent = new Intent(getActivity(), KonfirmasiBarangActivity.class);
-                    //intent.putExtra("key_id_transaksi", id_transaksi);
-                    //startActivity(intent);
-                }
-                if(status.contains("Y")){
-                    Toast.makeText(Transaksi.this, "Anda sudah bayar", Toast.LENGTH_SHORT).show();
-                }
-            }
+        adapter = new DiskusiAdapter(Diskusi.this, itemList);
 
-            @Override
-            public void onButtonSelected(int position, String id_transaksi) {
-                //buka printed invoice
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://203.153.21.11/app/lapakkita-widia/api/print/?id_transaksi="+id_transaksi));
-                startActivity(browserIntent);
-            }
-        });
-
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(Transaksi.this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(Diskusi.this);
         rc.setLayoutManager(mLayoutManager);
         rc.setItemAnimator(new DefaultItemAnimator());
         rc.setAdapter(adapter);
 
         HashMap<String, String> user = session.getUserDetails();
         //input data ke keranjang
-        String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
+        final String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
 
-        new getData(id_pelanggan).execute();
+        id_produk = getIntent().getStringExtra("key_id_produk");
+
+        new getData(id_produk).execute();
+
+        edtKomentar = (EditText) findViewById(R.id.edt_komentar);
+
+        btnSend = (ImageButton) findViewById(R.id.btn_send);
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(edtKomentar.getText().toString().length() > 0){
+                    String komentar = edtKomentar.getText().toString();
+                    new postData(id_produk, id_pelanggan, komentar).execute();
+                    edtKomentar.setText("");
+                }
+                else{
+                    Toast.makeText(Diskusi.this, "Mohon isi komentar anda", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
     }
 
@@ -120,16 +112,16 @@ public class Transaksi extends AppCompatActivity {
 
         //variabel untuk tangkap data
         private int scs = 0;
-        private String id_pelanggan;
+        private String id_produk;
 
-        public getData(String id_pelanggan){
-            this.id_pelanggan = id_pelanggan;
+        public getData(String id_produk){
+            this.id_produk = id_produk;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(Transaksi.this);
+            pDialog = new ProgressDialog(Diskusi.this);
             pDialog.setMessage("Loading...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -140,7 +132,7 @@ public class Transaksi extends AppCompatActivity {
             try{
                 //susun parameter
                 HashMap<String,String> detail = new HashMap<>();
-                detail.put("id_pelanggan", id_pelanggan);
+                detail.put("id_produk", id_produk);
 
                 try {
                     //convert this HashMap to encodedUrl to send to php file
@@ -161,20 +153,16 @@ public class Transaksi extends AppCompatActivity {
                             JSONObject c = products.getJSONObject(i);
 
                             // Storing each json item in variable
-                            String id_transaksi = c.getString("id_transaksi");
-                            String id_keranjang = c.getString("id_keranjang");
-                            String id_pelanggan = c.getString("id_pelanggan");
-                            String total_bayar = c.getString("total_bayar");
+                            String id_diskusi = c.getString("id_diskusi");
+                            String nama_pelanggan = c.getString("nama_pelanggan");
+                            String komentar = c.getString("komentar");
                             String waktu = c.getString("waktu");
-                            String status = c.getString("status");
 
-                            ItemTransaksi p = new ItemTransaksi();
-                            p.setId_transaksi(id_transaksi);
-                            p.setId_keranjang(id_keranjang);
-                            p.setId_pelanggan(id_pelanggan);
-                            p.setTotal_bayar(total_bayar);
+                            ItemDiskusi p = new ItemDiskusi();
+                            p.setId_diskusi(id_diskusi);
+                            p.setNama_pelanggan(nama_pelanggan);
+                            p.setKomentar(komentar);
                             p.setTimestamp(waktu);
-                            p.setStatus(status);
 
                             itemList.add(p);
 
@@ -200,6 +188,77 @@ public class Transaksi extends AppCompatActivity {
 
             adapter.notifyDataSetChanged();
             pDialog.dismiss();
+
+        }
+
+    }
+
+    private class postData extends AsyncTask<Void,Void,String> {
+
+        //variabel untuk tangkap data
+        private int scs = 0;
+        private String psn;
+        private String id_produk, id_pelanggan, komentar;
+
+        public postData(String id_produk, String id_pelanggan, String komentar){
+            this.id_produk = id_produk;
+            this.id_pelanggan = id_pelanggan;
+            this.komentar = komentar;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(Diskusi.this);
+            pDialog.setMessage("Loading...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected String doInBackground(Void... params) {
+            try{
+                //susun parameter
+                HashMap<String,String> detail = new HashMap<>();
+                detail.put("id_produk", id_produk);
+                detail.put("id_pelanggan", id_pelanggan);
+                detail.put("komentar", komentar);
+
+                try {
+                    //convert this HashMap to encodedUrl to send to php file
+                    String dataToSend = hashMapToUrl(detail);
+                    //make a Http request and send data to saveImage.php file
+                    String response = Request.post(url_post_komen,dataToSend);
+
+                    //dapatkan respon
+                    Log.e("Respon", response);
+
+                    JSONObject ob = new JSONObject(response);
+                    scs = ob.getInt("success");
+
+                    if (scs == 1) {
+                        psn = ob.getString("message");
+                    } else {
+                        psn = ob.getString("message");
+                    }
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            pDialog.dismiss();
+
+            itemList.clear();
+            new getData(id_produk).execute();
 
         }
 

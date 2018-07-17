@@ -235,7 +235,7 @@ public class BiodataUser extends AppCompatActivity {
                 txtNoHp.setText(no_hp);
                 txtAlamat.setText(alamat);
                 txtEmail.setText(email);
-                Glide.with(BiodataUser.this).load(foto).into(logo);
+                //Glide.with(BiodataUser.this).load(foto).into(logo);
             }
         }
 

@@ -3,6 +3,7 @@ package ta.widia.lapakkita;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -60,26 +61,20 @@ public class ProdukDetail extends AppCompatActivity {
 
         final String id_produk = getIntent().getStringExtra("key_id_pdk");
 
-        /*String nama = getIntent().getStringExtra("key_nama");
-        String alamat = getIntent().getStringExtra("key_alamat");
-        String gambar = getIntent().getStringExtra("key_gambar");
-        final String hp = getIntent().getStringExtra("key_hp");
-        final String lat = getIntent().getStringExtra("key_lat");
-        final String lon = getIntent().getStringExtra("key_lon");*/
-
         getSupportActionBar().setTitle("Detail Produk");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPagerImage = (ViewPager) findViewById(R.id.viewPagerImage);
-        imageItem = new ArrayList<ItemProdukDetailImage>();
 
+        imageItem = new ArrayList<ItemProdukDetailImage>();
         new getData(id_produk).execute();
+
 
         imageAdapter = new ProdukDetailImageAdapter(ProdukDetail.this, imageItem);
         viewPagerImage.setAdapter(imageAdapter);
 
 
-        imageAdapter.notifyDataSetChanged();
+
 
         txtNama = (TextView) findViewById(R.id.txt_nama);
         txtHarga = (TextView) findViewById(R.id.txt_harga);
@@ -126,11 +121,9 @@ public class ProdukDetail extends AppCompatActivity {
                 }
                 //kalau sudah login
                 else{
-                    HashMap<String, String> user = session.getUserDetails();
-
-                    String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
-                    //lakukan diskusi
-                    Toast.makeText(ProdukDetail.this, "Anda akan diskusi produk ini", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ProdukDetail.this, Diskusi.class);
+                    intent.putExtra("key_id_produk", id_produk);
+                    startActivity(intent);
                 }
             }
         });
@@ -141,6 +134,7 @@ public class ProdukDetail extends AppCompatActivity {
         //variabel untuk tangkap data
         private int scs = 0;
         String id;
+        String id_umkm, ukm, alamat, logo, hp, lat, lon;
 
         public getData(String id){
             this.id = id;
@@ -194,6 +188,12 @@ public class ProdukDetail extends AppCompatActivity {
                             view = c.getString("kunjungan_produk");
                             desk = c.getString("deskripsi");
 
+                            id_umkm = c.getString("id_umkm");
+                            logo = c.getString("logo");
+                            hp = c.getString("hp");
+                            lat = c.getString("lat");
+                            lon = c.getString("lon");
+
                             imageItem.add(new ItemProdukDetailImage(gambar1, "1"));
                             imageItem.add(new ItemProdukDetailImage(gambar2, "2"));
                             imageItem.add(new ItemProdukDetailImage(gambar3, "3"));
@@ -218,16 +218,33 @@ public class ProdukDetail extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            imageAdapter.notifyDataSetChanged();
             pDialog.dismiss();
 
             txtNama.setText(nama);
             txtHarga.setText("Rp. "+harga);
             txtStock.setText("Stock: "+stok);
             txtUkm.setText(ukm);
+            txtUkm.setTextColor(Color.DKGRAY);
+            txtUkm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ProdukDetail.this, UkmDetail.class);
+                    intent.putExtra("key_id", id_umkm);
+                    intent.putExtra("key_nama", ukm);
+                    intent.putExtra("key_alamat", alamat);
+                    intent.putExtra("key_hp", hp);
+                    intent.putExtra("key_gambar", logo);
+                    intent.putExtra("key_lat", lat);
+                    intent.putExtra("key_lon", lon);
+                    startActivity(intent);
+                }
+            });
             txtAlamat.setText(alamat);
             txtView.setText(" Dilihat: "+view);
             txtDesk.setText(Html.fromHtml(desk));
+
+
+            imageAdapter.notifyDataSetChanged();
         }
 
     }

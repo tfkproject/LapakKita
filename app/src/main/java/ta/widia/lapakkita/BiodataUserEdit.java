@@ -71,7 +71,7 @@ public class BiodataUserEdit extends AppCompatActivity {
         final String foto_pelanggan = getIntent().getStringExtra("key_foto");
 
         logo = (ImageView) findViewById(R.id.edt_profil_user);
-        Glide.with(BiodataUserEdit.this).load(foto_pelanggan).into(logo);
+        //Glide.with(BiodataUserEdit.this).load(foto_pelanggan).into(logo);
 
         edtNama = (EditText) findViewById(R.id.edt_nama_user);
         edtNama.setText(nm_pelanggan);

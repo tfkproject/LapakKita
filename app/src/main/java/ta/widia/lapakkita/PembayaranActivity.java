@@ -3,6 +3,7 @@ package ta.widia.lapakkita;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -170,8 +171,8 @@ public class PembayaranActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 //buka printed invoice
-                //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://genkan.ecomfish.com/api/print/?id_transaksi="+id_transaksi));
-                //startActivity(browserIntent);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://203.153.21.11/app/lapakkita-widia/api/print/?id_transaksi="+id_transaksi));
+                startActivity(browserIntent);
                 ///
             }
             if(scs.contains("0")){

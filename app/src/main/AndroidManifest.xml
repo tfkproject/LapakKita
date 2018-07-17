@@ -28,6 +28,7 @@
         <activity android:name=".UkmDetail"/>
         <activity android:name=".ProdukDetail"/>
         <activity android:name=".LoginUser"/>
+        <activity android:name=".RegistrasiUser"/>
         <activity android:name=".BiodataUser"/>
         <activity android:name=".BiodataUserEdit"/>
         <activity android:name=".DirectionMap"/>
@@ -35,6 +36,8 @@
         <activity android:name=".OrderActivity"/>
         <activity android:name=".Transaksi"/>
         <activity android:name=".PembayaranActivity"/>
+        <activity android:name=".KonfirmasiBayarActivity"/>
+        <activity android:name=".Diskusi"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
