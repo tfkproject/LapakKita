@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="Taufik Hidayat"
+                    android:text="[nama]"
                     android:textSize="24dp" />
 
                 <TextView
@@ -53,7 +53,7 @@
                     android:layout_below="@id/nama_umkm"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_call_black"
-                    android:text=" 082285109558"
+                    android:text=" [hp]"
                     android:textSize="18dp" />
 
             </LinearLayout>
@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_location"
-                    android:text=" Jl.Utama Teluk Latak - Depan Langgam Net, Kec. Teluk Latak, Bengkalis "/>
+                    android:text=" [alamat] "/>
 
                 <TextView
                     android:id="@+id/email_user"
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_email"
-                    android:text=" taufik.y2t@gmail.com"/>
+                    android:text=" [email]"/>
 
             </LinearLayout>
 

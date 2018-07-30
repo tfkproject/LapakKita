@@ -2,6 +2,7 @@ package ta.widia.lapakkita;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -57,13 +59,14 @@ public class KonfirmasiBayarActivity extends AppCompatActivity {
     SessionManager session;
     private ProgressDialog pDialog;
     public String SERVER = Config.HOST+"konfirmasi_bayar.php";
+    public String SERVER_COD = Config.HOST+"konfirmasi_bayar_cod.php";
     private static final String TAG = KonfirmasiBayarActivity.class.getSimpleName();
     TextView txtId_transaksi;
-    Button btnKonfirmasi;
+    Button btnKonfirmasi, btnCOD;
     FloatingActionButton fab;
     private static final int RESULT_SELECT_IMAGE = 1;
     public ImageView imageView;
-    public String timestamp;
+    public String timestamp, id_transaksi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +81,7 @@ public class KonfirmasiBayarActivity extends AppCompatActivity {
             checkPermission();
         }
 
-        final String id_transaksi = getIntent().getStringExtra("key_id_transaksi");
+        id_transaksi = getIntent().getStringExtra("key_id_transaksi");
 
         imageView = (ImageView) findViewById(R.id.pic);
         txtId_transaksi = (TextView) findViewById(R.id.txt_id_transaksi);
@@ -98,6 +101,7 @@ public class KonfirmasiBayarActivity extends AppCompatActivity {
         });
 
         btnKonfirmasi = (Button) findViewById(R.id.btn_submit);
+        btnCOD = (Button) findViewById(R.id.btn_cod);
 
 
         ///
@@ -130,6 +134,39 @@ public class KonfirmasiBayarActivity extends AppCompatActivity {
             }
         });
 
+        btnCOD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogBox("Apakah anda ingin, melakukan pembayaran dengan cara COD ?");
+            }
+        });
+
+    }
+
+    private void dialogBox(String pesan){
+        //ini munculkan dialog box keranjang belanja
+        AlertDialog.Builder builder = new AlertDialog.Builder(KonfirmasiBayarActivity.this);
+        builder.setTitle("Transaksi COD");
+        builder.setMessage(pesan);
+        builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new postDataCOD(id_transaksi).execute();
+            }
+        });
+
+        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.setCanceledOnTouchOutside(false);
+        alert.show();
     }
 
     //fungsi pilih image
@@ -481,6 +518,86 @@ public class KonfirmasiBayarActivity extends AppCompatActivity {
 
     }
 
+    private class postDataCOD extends AsyncTask<Void,Void,String> {
+        private String id_transaksi;
+
+        public postDataCOD(String id_transaksi){
+            this.id_transaksi = id_transaksi;
+        }
+
+        String scs = "";
+        String psn = "";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(KonfirmasiBayarActivity.this);
+            pDialog.setMessage("Loading..");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                //menganbil data-data yang akan dikirim
+
+                //generate hashMap to store encodedImage and the name
+                HashMap<String,String> detail = new HashMap<>();
+                detail.put("id_transaksi", id_transaksi);
+
+                try{
+                    //convert this HashMap to encodedUrl to send to php file
+                    String dataToSend = hashMapToUrl(detail);
+                    //make a Http request and send data to saveImage.php file
+                    String response = Request.post(SERVER_COD,dataToSend);
+
+                    //dapatkan respon
+                    Log.e("Respon", response);
+
+                    JSONObject ob = new JSONObject(response);
+                    scs = ob.getString("success");
+                    psn = ob.getString("message");
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    Log.e(TAG, "ERROR  " + e);
+                    Toast.makeText(getApplicationContext(),"Maaf, terjadi error",Toast.LENGTH_SHORT).show();
+                    //return null;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            /*runOnUiThread(new Runnable() {
+                public void run() {
+
+                }
+            });*/
+            return null;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            pDialog.dismiss();
+            if(scs.contains("1")){
+                //buka mainActivity
+                Intent intent = new Intent(KonfirmasiBayarActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+
+                Toast.makeText(getApplicationContext(),psn,Toast.LENGTH_LONG).show();
+            }
+            if(scs.contains("0")){
+                Toast.makeText(getApplicationContext(),psn,Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
 
     private String hashMapToUrl(HashMap<String, String> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();

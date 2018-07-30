@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +21,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog pDialog;
     private List<ItemKategori> kategoriItem;
     private SessionManager session;
-
+    SubMenu subMenu;
     private boolean log_in;
 
     @Override
@@ -76,8 +79,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        //NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        //navigationView.setNavigationItemSelectedListener(this);
 
 
         kategoriItem = new ArrayList<ItemKategori>();
@@ -104,17 +107,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addMenuItemInNavMenuDrawer() {
-        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
-
-        Menu menu = navView.getMenu();
-        Menu submenu = menu.addSubMenu("Kategori");
-
-        for(int i = 0; i < kategoriItem.size(); i++ ){
-            //int itemId = submenu.getItem(i).getItemId();
-
-            submenu.add(kategoriItem.get(i).getKategori());
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        // Menu Initialization
+        Menu menu = navigationView.getMenu();
+        subMenu = menu.addSubMenu("Kategori");
+        for(int i = 0; i < kategoriItem.size(); i++){
+            subMenu.add(i, Menu.FIRST + i, Menu.FIRST, kategoriItem.get(i).getKategori());
         }
-        navView.invalidate();
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        for(int i = 0; i < kategoriItem.size(); i++){
+            if (id == subMenu.getItem(i).getItemId()) {
+                Intent intent = new Intent(MainActivity.this, ProdukActivity.class);
+                intent.putExtra("key_id_kategori", kategoriItem.get(i).getId());
+                intent.putExtra("key_nm_kategori", kategoriItem.get(i).getKategori());
+                startActivity(intent);
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private class getKategori extends AsyncTask<Void,Void,String> {
@@ -258,7 +276,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.act_pencarian) {
-            Toast.makeText(this, "Pencarian", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, CariActivity.class);
+            startActivity(intent);
             return true;
         }
         else if (id == R.id.act_keranjang){
@@ -316,30 +335,5 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 }

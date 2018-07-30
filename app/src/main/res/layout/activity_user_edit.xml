@@ -43,7 +43,6 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="Taufik Hidayat"
                     android:hint="Nama anda"
                     android:textSize="24dp"
                     android:inputType="text"/>
@@ -55,7 +54,6 @@
                     android:layout_below="@id/nama_umkm"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_call_black"
-                    android:text=" 082285109558"
                     android:hint="Nomor telpon"
                     android:textSize="18dp"
                     android:inputType="numberDecimal"/>
@@ -82,7 +80,6 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_location"
-                    android:text=" Jl.Utama Teluk Latak - Depan Langgam Net, Kec. Teluk Latak, Bengkalis "
                     android:hint="Alamat anda"
                     android:inputType="text"/>
 
@@ -92,7 +89,6 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:drawableLeft="@drawable/ic_email"
-                    android:text=" taufik.y2t@gmail.com"
                     android:hint="Alamat email"
                     android:inputType="textEmailAddress"/>
 

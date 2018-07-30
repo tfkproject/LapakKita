@@ -35,10 +35,8 @@ import ta.widia.lapakkita.util.SessionManager;
 
 public class PembayaranActivity extends AppCompatActivity {
 
-    TextView txtTotalHarga;
+    TextView txtNama, txtHp, txtTotalHarga;
     EditText txtAlamat;
-    private RadioGroup rg;
-    private RadioButton rbCod, rbKrm;
     private static final String TAG = PembayaranActivity.class.getSimpleName();
     private ProgressDialog pDialog;
     public String SERVER_POST = Config.HOST+"buat_invoice.php";
@@ -57,28 +55,32 @@ public class PembayaranActivity extends AppCompatActivity {
 
         HashMap<String, String> user = session.getUserDetails();
         final String id_pelanggan = user.get(SessionManager.KEY_ID_PELANGGAN);
+        final String nm_pelanggan = user.get(SessionManager.KEY_NM_PELANGGAN);
+        final String hp_pelanggan = user.get(SessionManager.KEY_NOHP_PELANGGAN);
         final String alamat_pelanggan = user.get(SessionManager.KEY_ALAMAT_PELANGGAN);
 
         final String total_bayar = getIntent().getStringExtra("key_total_bayar");
         final String id_keranjang = getIntent().getStringExtra("key_id_keranjang");
 
-        txtTotalHarga = (TextView) findViewById(R.id.txt_harga);
-        txtTotalHarga.setText("Rp. "+total_bayar);
+        txtNama = (TextView) findViewById(R.id.txt_nama);
+        txtNama.setText(nm_pelanggan);
+
+        txtHp = (TextView) findViewById(R.id.txt_hp);
+        txtHp.setText(hp_pelanggan);
 
         txtAlamat = (EditText) findViewById(R.id.txt_alamat);
         txtAlamat.setText(alamat_pelanggan);
 
-        rg = (RadioGroup) findViewById(R.id.mt_pembayaran);
-        rbCod = (RadioButton) findViewById(R.id.rb_cod);
-        rbKrm = (RadioButton) findViewById(R.id.rb_krm);
+        txtTotalHarga = (TextView) findViewById(R.id.txt_harga);
+        txtTotalHarga.setText("Rp. "+total_bayar);
+
 
         btnInvoice = (Button) findViewById(R.id.btn_invoice);
         btnInvoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String metode_bayar = ((RadioButton)findViewById(rg.getCheckedRadioButtonId())).getText().toString();
-                new postData(id_keranjang, id_pelanggan, total_bayar, "N", metode_bayar, alamat_pelanggan).execute();
+                new postData(id_keranjang, id_pelanggan, total_bayar, "N", alamat_pelanggan).execute();
             }
         });
     }
@@ -88,15 +90,13 @@ public class PembayaranActivity extends AppCompatActivity {
         private String id_pelanggan;
         private String total_bayar;
         private String status;
-        private String metode;
         private String alamat;
 
-        public postData(String id_keranjang, String id_pelanggan, String total_bayar, String status, String metode, String alamat){
+        public postData(String id_keranjang, String id_pelanggan, String total_bayar, String status, String alamat){
             this.id_keranjang = id_keranjang;
             this.id_pelanggan = id_pelanggan;
             this.total_bayar = total_bayar;
             this.status = status;
-            this.metode = metode;
             this.alamat = alamat;
         }
 
@@ -125,7 +125,6 @@ public class PembayaranActivity extends AppCompatActivity {
                 detail.put("id_pelanggan", id_pelanggan);
                 detail.put("total_bayar", total_bayar);
                 detail.put("status", status);
-                detail.put("metode_bayar", metode);
                 detail.put("alamat_orderan", alamat);
 
                 try{

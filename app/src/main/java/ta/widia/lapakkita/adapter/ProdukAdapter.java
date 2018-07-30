@@ -16,24 +16,26 @@ import java.util.List;
 
 import ta.widia.lapakkita.ProdukDetail;
 import ta.widia.lapakkita.R;
-import ta.widia.lapakkita.model.ItemProdukUgl;
+import ta.widia.lapakkita.model.ItemProduk;
 
 /**
  * Created by taufik on 21/05/18.
  */
 
-public class ProdukUglAdapter extends RecyclerView.Adapter<ProdukUglAdapter.ViewHolder> {
+public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ViewHolder> {
 
-    List<ItemProdukUgl> items;
+    List<ItemProduk> items;
     Context context;
+    private AdapterListener listener;
 
-    public ProdukUglAdapter(Context context, List<ItemProdukUgl> items) {
+    public ProdukAdapter(Context context, List<ItemProduk> items, AdapterListener listener) {
         this.context = context;
         this.items = items;
+        this.listener = listener;
     }
 
     @Override
-    public ProdukUglAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ProdukAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_produk_unggulan, parent, false);
         return new ViewHolder(view);
     }
@@ -43,9 +45,7 @@ public class ProdukUglAdapter extends RecyclerView.Adapter<ProdukUglAdapter.View
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ProdukDetail.class);
-                intent.putExtra("key_id_pdk", items.get(position).getId());
-                context.startActivity(intent);
+                listener.onSelected(position, items.get(position).getId());
             }
         });
         Glide.with(context).load(items.get(position).getUrl_gambar()).into(holder.imgProduk);
@@ -72,5 +72,9 @@ public class ProdukUglAdapter extends RecyclerView.Adapter<ProdukUglAdapter.View
             txtNama = (TextView) itemView.findViewById(R.id.txt_nama);
             txtUkm = (TextView) itemView.findViewById(R.id.txt_ukm);
         }
+    }
+
+    public interface AdapterListener {
+        void onSelected(int position, String id_produk);
     }
 }

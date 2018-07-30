@@ -37,84 +37,45 @@ import ta.widia.lapakkita.model.ItemProduk;
 import ta.widia.lapakkita.util.Config;
 import ta.widia.lapakkita.util.Request;
 
-public class UkmDetail extends AppCompatActivity {
+public class ProdukActivity extends AppCompatActivity {
 
-    ImageView logo;
-    TextView txtNama, txtAlamat;
-    Button btnTelp, btnDirek;
     private ProgressDialog pDialog;
 
     private RecyclerView rc;
     private List<ItemProduk> itemPrdkList;
     private ProdukAdapter prdkAdapter;
-    private String url_produk = Config.HOST+"produk_umkm.php";
+    private String url_produk = Config.HOST+"list_produk.php";
     private String url_post_view = Config.HOST+"update_view.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.umkm_detail);
+        setContentView(R.layout.activity_produk);
 
-        String id_umkm = getIntent().getStringExtra("key_id");
-        final String nama = getIntent().getStringExtra("key_nama");
-        String alamat = getIntent().getStringExtra("key_alamat");
-        String gambar = getIntent().getStringExtra("key_gambar");
-        final String hp = getIntent().getStringExtra("key_hp");
-        final String lat = getIntent().getStringExtra("key_lat");
-        final String lon = getIntent().getStringExtra("key_lon");
+        String id_kategori = getIntent().getStringExtra("key_id_kategori");
+        String nm_kategori = getIntent().getStringExtra("key_nm_kategori");
 
-        getSupportActionBar().setTitle(nama);
+        getSupportActionBar().setTitle(nm_kategori);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        logo = (ImageView) findViewById(R.id.img_logo);
-        txtNama = (TextView) findViewById(R.id.txt_nama);
-        txtAlamat = (TextView) findViewById(R.id.txt_alamat);
-
-        btnTelp = (Button) findViewById(R.id.btn_telp);
-        btnDirek = (Button) findViewById(R.id.btn_direk);
 
         rc = (RecyclerView) findViewById(R.id.recycler_view);
 
-        Glide.with(UkmDetail.this).load(gambar).into(logo);
-        txtNama.setText(nama);
-        txtAlamat.setText(alamat);
-        btnTelp.setText(hp);
-
-        btnTelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"+hp));
-                startActivity(intent);
-            }
-        });
-
-        btnDirek.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UkmDetail.this, DirectionMap.class);
-                intent.putExtra("key_nama_tujuan", nama);
-                intent.putExtra("key_lat_tujuan", lat);
-                intent.putExtra("key_long_tujuan", lon);
-                startActivity(intent);
-            }
-        });
-
-        new getProduk(id_umkm).execute();
+        new getProduk(id_kategori).execute();
 
         itemPrdkList = new ArrayList<>();
 
-        prdkAdapter = new ProdukAdapter(UkmDetail.this, itemPrdkList, new ProdukAdapter.AdapterListener() {
+        prdkAdapter = new ProdukAdapter(ProdukActivity.this, itemPrdkList, new ProdukAdapter.AdapterListener() {
             @Override
             public void onSelected(int position, String id_produk) {
-                Intent intent = new Intent(UkmDetail.this, ProdukDetail.class);
+                Intent intent = new Intent(ProdukActivity.this, ProdukDetail.class);
                 intent.putExtra("key_id_pdk", id_produk);
                 startActivity(intent);
 
                 new updateView(id_produk).execute();
             }
         });
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(UkmDetail.this, 2);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(ProdukActivity.this, 2);
         rc.setLayoutManager(mLayoutManager);
         rc.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         rc.setItemAnimator(new DefaultItemAnimator());
@@ -125,16 +86,16 @@ public class UkmDetail extends AppCompatActivity {
 
         //variabel untuk tangkap data
         private int scs = 0;
-        private String id_umkm;
+        private String id_kategori;
 
-        public getProduk(String id_umkm){
-            this.id_umkm = id_umkm;
+        public getProduk(String id_kategori){
+            this.id_kategori = id_kategori;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(UkmDetail.this);
+            pDialog = new ProgressDialog(ProdukActivity.this);
             pDialog.setMessage("Memuat data...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -146,7 +107,7 @@ public class UkmDetail extends AppCompatActivity {
             try{
                 //susun parameter
                 HashMap<String,String> detail = new HashMap<>();
-                detail.put("id_umkm", id_umkm);
+                detail.put("id_kategori", id_kategori);
 
                 try {
                     //convert this HashMap to encodedUrl to send to php file

@@ -99,8 +99,7 @@
                         android:layout_height="wrap_content"
                         android:text="  [jumlah dilihat]"
                         android:drawableLeft="@drawable/ic_eye"
-                        android:padding="5dp"
-                        android:visibility="gone"/>
+                        android:padding="5dp"/>
 
                     <TextView
                         android:layout_width="match_parent"

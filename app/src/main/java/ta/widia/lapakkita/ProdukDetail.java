@@ -67,6 +67,11 @@ public class ProdukDetail extends AppCompatActivity {
         viewPagerImage = (ViewPager) findViewById(R.id.viewPagerImage);
 
         imageItem = new ArrayList<ItemProdukDetailImage>();
+        imageItem.add(new ItemProdukDetailImage(gambar1, "1"));
+        imageItem.add(new ItemProdukDetailImage(gambar2, "2"));
+        imageItem.add(new ItemProdukDetailImage(gambar3, "3"));
+        imageItem.add(new ItemProdukDetailImage(gambar4, "4"));
+
         new getData(id_produk).execute();
 
 
@@ -170,7 +175,7 @@ public class ProdukDetail extends AppCompatActivity {
 
                     if (scs == 1) {
                         JSONArray products = ob.getJSONArray("field");
-
+                        imageItem.clear();
                         for (int i = 0; i < products.length(); i++) {
                             JSONObject c = products.getJSONObject(i);
 
@@ -218,6 +223,8 @@ public class ProdukDetail extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+
+            imageAdapter.notifyDataSetChanged();
             pDialog.dismiss();
 
             txtNama.setText(nama);
@@ -240,11 +247,9 @@ public class ProdukDetail extends AppCompatActivity {
                 }
             });
             txtAlamat.setText(alamat);
-            txtView.setText(" Dilihat: "+view);
+            txtView.setText(" "+view+" view");
             txtDesk.setText(Html.fromHtml(desk));
 
-
-            imageAdapter.notifyDataSetChanged();
         }
 
     }

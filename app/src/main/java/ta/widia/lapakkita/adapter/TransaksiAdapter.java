@@ -95,6 +95,11 @@ public class TransaksiAdapter extends RecyclerView.Adapter<TransaksiAdapter.MyVi
             holder.status.setTextColor(Color.BLUE);
             holder.cardView.setOnClickListener(null);
         }
+        if(res_status.contains("C")){
+            status = "Pembayaran COD";
+            holder.status.setTextColor(Color.BLUE);
+            holder.cardView.setOnClickListener(null);
+        }
         if(res_status.contains("S")){
             status = "Paket sedang dalam pengiriman";
             holder.status.setTextColor(Color.GRAY);

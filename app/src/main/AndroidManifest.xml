@@ -38,6 +38,8 @@
         <activity android:name=".PembayaranActivity"/>
         <activity android:name=".KonfirmasiBayarActivity"/>
         <activity android:name=".Diskusi"/>
+        <activity android:name=".CariActivity"/>
+        <activity android:name=".ProdukActivity"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

@@ -12,8 +12,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="Bayar ke"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -89,6 +88,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Konfirmasi" />
+
+        <Button
+            android:layout_margin="5dp"
+            android:id="@+id/btn_cod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="COD ?" />
 
     </LinearLayout>
 

@@ -29,6 +29,50 @@
                     android:layout_marginBottom="5dp"
                     android:layout_marginLeft="10dp"
                     android:layout_height="wrap_content"
+                    android:text="Nama:"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/txt_nama"
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content"
+                    android:text="[nama]"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content"
+                    android:text="Nomor HP:"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/txt_hp"
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content"
+                    android:text="[hp]"/>
+
+                <EditText
+                    android:id="@+id/txt_alamat"
+                    android:layout_width="match_parent"
+                    android:inputType="textMultiLine"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:hint="Alamat anda"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content"
                     android:text="Total Bayar:"
                     android:textStyle="bold"/>
 
@@ -40,46 +84,6 @@
                     android:layout_marginLeft="10dp"
                     android:layout_height="wrap_content"
                     android:text="Rp. [nilai]"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_height="wrap_content"
-                    android:text="Metode pembayaran:"
-                    android:textStyle="bold"/>
-
-                <RadioGroup
-                    android:id="@+id/mt_pembayaran"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/imageView1"
-                    android:layout_marginTop="10dp" >
-
-                    <RadioButton
-                        android:id="@+id/rb_cod"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="COD"/>
-
-                    <RadioButton
-                        android:id="@+id/rb_krm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Kirim"/>
-
-                </RadioGroup>
-
-                <EditText
-                    android:id="@+id/txt_alamat"
-                    android:layout_width="match_parent"
-                    android:inputType="textMultiLine"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:hint="Alamat anda"/>
                 <!--<Spinner
                     android:id="@+id/agen_kurir"
                     android:layout_marginLeft="30dp"
